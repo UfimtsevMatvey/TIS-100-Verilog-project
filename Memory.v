@@ -41,3 +41,20 @@
 		end
 		assign out_data = out_data_0;
 	endmodule
+	
+	module pos_Reg_asin_reset #(parameter N = 8)(
+		input wire clk, enable, reset,
+		input wire [0:N-1] data,
+		output wire [0:N-1] out_data
+		);
+		reg [0:N-1] out_data_0;
+		always @(posedge clk or posedge reset)
+		begin
+			if(reset == 1'b1)
+				out_data_0 <= 0;
+			else 
+				out_data_0 <= data;
+				
+		end
+		assign out_data = out_data_0;
+	endmodule
