@@ -1,14 +1,13 @@
 module jmp_path(
-	input wire 			rst_n
+	input wire 			rst_n,
 	input wire 			clk,
 	input wire [0:1] 	jmpCond,
 	input wire 			jmpInstr,
 	input wire [0:17] 	instr,
 	input wire [0:7] 	jAddr,
-	output wire [0:7] 	Addr_instr,
-	output wire [0:4] 	instrType
+	output wire [0:7] 	Addr_instr
 	);
-	wire [0:7] ipNext;
+	reg [0:7] ipNext;
 	wire [0:7] incAddr;
 	reg [0:7] ipCurrent;
 

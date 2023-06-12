@@ -1,5 +1,5 @@
 module Memory(
-	input wire 			rst_n;
+	input wire 			rst_n,
 	input wire 			clk,
 	input wire [0:7] 	addr,
 	output wire [0:17] 	data_out
@@ -15,7 +15,7 @@ module Memory(
 		if(~rst_n)	
 			data <= 'h0;
 		else
-			data <= mem[A];
+			data <= mem[addr];
 
 	assign data_out = data;
 endmodule

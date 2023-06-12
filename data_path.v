@@ -1,4 +1,4 @@
-module DATA_path(
+module data_path(
 	input wire 			rst_n,
 	input wire 			clk,
 	input wire 			SwpActiveReg,
@@ -21,7 +21,8 @@ module DATA_path(
 	wire [0:7] enableOut; 
 	reg [0:7] data_out;
 	reg [0:7] ACC, bak;
-	wire [0:7] ACCdata, bakdata;
+	reg [0:7] ACCdata;
+	wire [0:7] bakdata;
 	wire enableACC, enablebak;
 	wire [0:7] ALURes;
 
@@ -150,7 +151,7 @@ module DATA_path(
 	end
 
 
-	alu #(N = 8)
+	alu #(.N(8))
 		alu(
 		.X1		(ACC		), 
 		.X2		(data_out	), 

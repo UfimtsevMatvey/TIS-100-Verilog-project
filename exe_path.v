@@ -4,7 +4,7 @@ module exe_path(
 	input wire 			SwpActiveReg,
 	input wire [0:1] 	SwpinA,
 	input wire 			SwpinB,
-	input wire 			enBak,
+	//input wire 			enBak,
 	input wire [0:1] 	ALUdesk,
 	input wire 			jmpInstr,
 	input wire [0:1] 	jmpCond,
@@ -19,22 +19,21 @@ module exe_path(
 						out2, 
 						out3,
 	output wire [0:7] 	ACCond,
-	output wire [0:7] 	Addr_instr,
-	output wire [0:4] 	instrType
+	output wire [0:7] 	Addr_instr
 );
 	wire [0:13] datainstr;
 	assign datainstr = instr[4:17]; //cut instr type
 
 	data_path 
-		data (
+		data_path(
 		.clk			(clk			), 
-		.reset			(rst_n			), 
+		.rst_n			(rst_n			), 
 		.SwpActiveReg	(SwpActiveReg	), 
 		.SwpinA			(SwpinA			), 
 		.SwpinB			(SwpinB			),
-		.enBak			(enBak			), 
+		//.enBak			(enBak			), 
 		.ALUdesk		(ALUdesk		), 
-		.jmpInstr		(jmpInstr		)
+		.jmpInstr		(jmpInstr		),
 		.datainstr		(datainstr		), 
 		.in0			(in0			),
 		.in1			(in1			), 
@@ -51,13 +50,11 @@ module exe_path(
 	jmp_path 
 		jmp(
 		.clk			(clk			), 
-		.reset			(rst_n			),
+		.rst_n			(rst_n			),
 		.jmpCond		(jmpCond		),
 		.jmpInstr		(jmpInstr		), 
 		.instr			(instr			), 
 		.jAddr			(jAddr			), 
-		.Addr_instr		(Addr_instr		), 
-		.instrType		(instrType		)
-		//.datainstr		(datainstr		)
+		.Addr_instr		(Addr_instr		)
 	);
 endmodule

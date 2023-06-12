@@ -33,7 +33,7 @@ module control_unit(
 					ALU_desk = 2'b00;
 					jmpInstr = 1'b1;
 					jmpCond = 2'b00;
-					enBak = 1'b1;
+					//enBak = 1'b1;
 				end
 			4'b0010: //sub
 				begin
