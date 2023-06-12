@@ -1,9 +1,9 @@
 # TIS-100-Verilog-project
 This Verilog-model processor from  game "TIS-100".
-ISA data comands:
+ISA data commands:
   {Command type xxxx}{sourse xxx}{destination xxx}{immediate - 8bit value}
   
-Commands type:
+Commands type[3:0]:
       mov: 0000 (move data)
       swp: 0001 (swap acc <-> bak)
       sub: 0010
@@ -15,7 +15,7 @@ Control instruction:
   if sourse = acc then bit sourse = "1"
   if sourse = imm then bit sourse = "0"
    
-  Command type:
+  Command type[3:0]:
       jmp: 0100 (uncondition jump)
       jez: 0101 (if acc = 0)
       jnz: 0110 (if acc != 0)

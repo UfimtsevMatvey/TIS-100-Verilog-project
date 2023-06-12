@@ -1,43 +1,21 @@
-	module Memory(
-		input wire [0:7] A,
-		output wire [0:17] RD
+module Memory(
+	input wire 			rst_n;
+	input wire 			clk,
+	input wire [0:7] 	addr,
+	output wire [0:17] 	data_out
 	);
-		reg [0:17] mem [0:25];
-		initial begin
-			$readmemb("rom_files/rom_init.txt", mem);
-		end
-		assign RD = mem[A];
-	endmodule
-	module neg_Reg(
-		input wire clk, enable, reset,
-		input wire [0:7] data,
-		output wire [0:7] out_data
-		);
-		reg [0:7] out_data_0;
-		always @(negedge clk)
-		begin
-			if(enable)
-				out_data_0 <= data;
-			if(reset)
-				out_data_0 <= 8'h0;
-				
-		end
-		assign out_data = out_data_0;
-	endmodule
-	
-	module pos_Reg(
-		input wire clk, enable, reset,
-		input wire [0:7] data,
-		output wire [0:7] out_data
-		);
-		reg [0:7] out_data_0;
-		always @(posedge clk)
-		begin
-			if(enable)
-				out_data_0 <= data;
-			if(reset)
-				out_data_0 <= 8'h0;
-				
-		end
-		assign out_data = out_data_0;
-	endmodule
+	reg [0:17] data;
+	reg [0:17] mem [0:25];
+`ifdef SIM
+	initial begin
+		$readmemb("rom_files/rom_init.txt", mem);
+	end
+`endif
+	always @(posedge clk)
+		if(~rst_n)	
+			data <= 'h0;
+		else
+			data <= mem[A];
+
+	assign data_out = data;
+endmodule
