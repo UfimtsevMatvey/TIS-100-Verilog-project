@@ -5,7 +5,8 @@ module jmp_path(
 	input wire 			jmpInstr,
 	input wire [0:17] 	instr,
 	input wire [0:7] 	jAddr,
-	output wire [0:7] 	Addr_instr
+	output wire [0:7] 	Addr_instr,
+	input wire			hlt_en
 	);
 	reg [0:7] ipNext;
 	wire [0:7] incAddr;
@@ -31,7 +32,10 @@ module jmp_path(
 
 	always @(posedge clk) begin
 		if(~rst_n) ipCurrent <= 'h0;
-		else ipCurrent <= ipNext;
+		else if(hlt_en)
+			ipCurrent <= ipCurrent;
+		else
+			ipCurrent <= ipNext;
 	end
 
 	assign Addr_instr = ipCurrent;

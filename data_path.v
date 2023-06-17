@@ -8,14 +8,41 @@ module data_path(
 	input wire 			jmpInstr,
 	input wire [0:1] 	ALUdesk,
 	input wire [0:13] 	datainstr,
-	input wire [0:7] 	in0, 
-						in1, 
-						in2, 
-						in3,
-	output reg [0:7] 	out0, 
-						out1, 
-						out2, 
-						out3,
+	output wire  		hlt_en,	
+//read interface
+    //read data
+	input wire [0:7]    in0,
+                        in1, 
+                        in2, 
+                        in3,
+    //read ready
+    input wire          rrdy0,
+                        rrdy1,
+                        rrdy2,
+                        rrdy3,
+    //read response
+    output reg          rresp0,
+                        rresp1,
+                        rresp2,
+                        rresp3,
+
+    //write interface
+    //write data
+	output reg [0:7]    out0, 
+                        out1, 
+                        out2, 
+                        out3,
+    //write val
+    output reg          val0,
+                        val1,
+                        val2,
+                        val3,
+    //write response
+    input wire          wresp0,
+                        wresp1,
+                        wresp2,
+                        wresp3,
+
 	output wire [0:7] 	ACCond
 );
 	wire [0:7] enableOut; 
@@ -29,6 +56,9 @@ module data_path(
 
 	reg [0:7] instr_sourse_decode;
 	reg [0:7] instr_decode;
+
+	reg data_ready;
+	assign hlt_en = ~data_ready || ((|enableOut[0:3]) || (val0 | val1 | val2 | val3));
 	//sourse decode
 	always @(*) begin
 		case(datainstr[3:5])
@@ -50,13 +80,13 @@ module data_path(
 				instr_sourse_decode = 8'b00000001;
 		endcase
 	end
-	assign enableOut = jmpInstr ? 8'h0 : instr_sourse_decode; //if this jmp instr, output disable
+	assign enableOut = (jmpInstr && ~data_ready) ? 8'h0 : instr_sourse_decode; //if this jmp instr, output disable
 
 
 	//type instraction decode
 	always @(*) begin
 			case(datainstr[0:2])
-				3'b000:
+				3'b000: 
 					data_out = in0;
 				3'b001:
 					data_out = in1;
@@ -75,42 +105,97 @@ module data_path(
 			endcase
 		end
 
+	always @(*) begin
+		case(datainstr[0:2])
+			3'b000: 
+				data_ready = rrdy0;
+			3'b001:
+				data_ready = rrdy1;
+			3'b010:
+				data_ready = rrdy2;
+			3'b011:
+				data_ready = rrdy3;
+			default:
+				data_ready = 1'b1;
+		endcase
+	end
+	//response to write from out's port
+	always @(posedge clk) begin
+		if(~rst_n) begin
+			rresp0 <= 1'b0;
+			rresp1 <= 1'b0;
+			rresp2 <= 1'b0;
+			rresp3 <= 1'b0;
+		end
+		else case(datainstr[0:2])
+			3'b000:
+				rresp0 <= rrdy0;
+			3'b001:
+				rresp1 <= rrdy1;
+			3'b010:
+				rresp2 <= rrdy2;
+			3'b011:
+				rresp3 <= rrdy3;
+			default: begin
+				rresp0 <= 1'b0;
+				rresp1 <= 1'b0;
+				rresp2 <= 1'b0;
+				rresp3 <= 1'b0;
+			end
+		endcase
+	end
 
 	//output regs (out0, out1, out2, out3)
 	always @(posedge clk) begin
 		if(~rst_n) begin
+			val0 <= 1'b0;
 			out0 <= 'h0;
 		end 
 		else if(enableOut[0]) begin
+			val0 <= 1'b1;
 			out0 <= data_out;
 		end
+		else if(wresp0) 
+			val0 <= 1'b0;
 	end
 
 	always @(posedge clk) begin
 		if(~rst_n) begin
+			val1 <= 1'b0;
 			out1 <= 'h0;
 		end 
 		else if(enableOut[1]) begin
+			val1 <= 1'b1;
 			out1 <= data_out;
 		end
+		else if(wresp1) 
+			val1 <= 1'b0;
 	end
 
 	always @(posedge clk) begin
 		if(~rst_n) begin
+			val2 <= 1'b0;
 			out2 <= 'h0;
 		end 
 		else if(enableOut[2]) begin
+			val0 <= 1'b1;
 			out2 <= data_out;
 		end
+		else if(wresp2) 
+			val2 <= 1'b0;
 	end
 
 	always @(posedge clk) begin
 		if(~rst_n) begin
+			val3 <= 1'b0;
 			out3 <= 'h0;
 		end 
 		else if(enableOut[3]) begin
+			val3 <= 1'b1;
 			out3 <= data_out;
 		end
+		else if(wresp3) 
+			val3 <= 1'b0;
 	end
 
 	always @(*) begin
